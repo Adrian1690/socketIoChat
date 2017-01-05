@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form#formMessages { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form#formMessages input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form#formMessages button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    
+        #messageArea{    
+            display:none;
+        } 
+
+    </style>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+  </head>
+  <body>
+    
+
+    <div id ="nicknameArea" >
+        <form id ="nickForm" action="">
+            <div class="form-group">
+                <label for="nickname">NickName:</label>
+                <input type="text" class="form-control" id="nickname">
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        
+    </div>
+
+    <div id ="messageArea" class="" >
+
+        <div class="well" id="usersNames">
+            <h3>User</h3>
+            <ul class="list-group" id="users">
+                
+            </ul>
+        </div>
+        <ul id="messages"></ul>
+        <form id="formMessages" action="">
+            <input id="m" autocomplete="off" /><button>Send</button>
+        </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        var socket = io('http://localhost:3001/');
+        
+        $('#formMessages').submit(function(){
+            socket.emit('chat message', $('#m').val() );
+            $('#m').val('');
+            return false;
+        });
+
+        socket.on('chat message', function(data){
+            
+            $('#messages').append( '<li> <b>' + data.user + ' : </b>' + data.message + '</li>' );
+        });
+
+        $('#nickForm').submit(function(e){
+            e.preventDefault();
+            
+            socket.emit('new user', $('#nickname').val(), function(data){
+                if(data){
+                    $('#nicknameArea').hide();
+                    $('#messageArea').show();        
+                }
+            });
+            $('#nickname').val('');
+        });
+
+        socket.on('get users', function(data){
+            var html = '';
+            
+            console.log(data);
+            for (var i=0 ; i< data.length ; i++){
+                html += '<li class="list-group-item">' + data[i] + '</li>';
+            }        
+
+            $('#usersNames').html(html);
+        });        
+
+            
+        
+
+    </script>
+  </body>
+</html>
