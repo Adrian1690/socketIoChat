@@ -15,7 +15,10 @@
         #messageArea{    
             display:none;
         } 
-
+        
+        .whispermessage {
+            color:gray;
+        }
     </style>
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -52,15 +55,18 @@
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
         var socket = io('http://localhost:3001/');
+        var userData = { username : ''};
         
+
         $('#formMessages').submit(function(){
             socket.emit('chat message', $('#m').val() );
+            
+            //$('#messages').append( '<li> <b>' + userData.username + ' : </b>' + $('#m').val() + '</li>' );
             $('#m').val('');
             return false;
         });
 
         socket.on('chat message', function(data){
-            
             $('#messages').append( '<li> <b>' + data.user + ' : </b>' + data.message + '</li>' );
         });
 
@@ -73,21 +79,25 @@
                     $('#messageArea').show();        
                 }
             });
+            userData.username = $('#nickname').val();
             $('#nickname').val('');
         });
 
         socket.on('get users', function(data){
             var html = '';
-            
+            console.log('users');
             console.log(data);
-            for (var i=0 ; i< data.length ; i++){
-                html += '<li class="list-group-item">' + data[i] + '</li>';
-            }        
+
+            $.each(data , function (i,v){
+                html += '<li class="list-group-item">' + v + '</li>';
+            });
 
             $('#usersNames').html(html);
         });        
 
-            
+        socket.on('whisper', function(data){
+            $('#messages').append( '<li class="whispermessage"> <b>' + data.user + ' : </b>' + data.message + '</li>' );
+        });    
         
 
     </script>
