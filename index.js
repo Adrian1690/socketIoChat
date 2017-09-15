@@ -4,7 +4,7 @@ var io = require('socket.io')(http);
 
 app.set('port', process.env.PORT || 3001);
 
-app.get('/', function(req, res){ 
+app.get('/', function(req, res){
 	//res.send('<h1>Hello world Adrian</h1>')
 	res.sendFile(__dirname + '/index.html');
 });
