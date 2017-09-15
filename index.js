@@ -6,7 +6,7 @@ app.set('port', process.env.PORT || 3001);
 
 app.get('/', function(req, res){
 	//res.send('<h1>Hello world Adrian</h1>')
-	res.sendFile(__dirname + '/index.html');
+	res.sendFile(__dirname + '/index.html'); 
 });
 
 // sending to sender-client only
